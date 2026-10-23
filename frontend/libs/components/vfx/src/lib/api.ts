@@ -67,5 +67,5 @@ export function newIdempotencyToken(): string {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
     return crypto.randomUUID();
   }
-  return Math.random().toString(36).slice(2) + Date.now().toString(36); // NOSONAR: UI-only id or cosmetic value, never a secret.
+  return Math.random().toString(36).slice(2) + Date.now().toString(36); // NOSONAR: fallback idempotency token, a uniqueness key and not a secret.
 }
