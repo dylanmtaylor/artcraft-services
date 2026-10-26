@@ -23,6 +23,7 @@ import {
   IconTrophy,
 } from "@tabler/icons-react";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 
 const COLUMN_COUNT = 7;
 
@@ -58,9 +59,7 @@ export function TopSpenders() {
   const [nextOffset, setNextOffset] = useState<number | null>(null);
 
   const cancelledRef = useRef(false);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const sentinelRef = useRef<HTMLTableRowElement | null>(null);
-
+  
   const loadData = async (
     timeWindow: string,
     offset?: number | null,
@@ -125,22 +124,7 @@ export function TopSpenders() {
     }
   }, [window, nextOffset, isLoadingMore]);
 
-  useEffect(() => {
-    if (observerRef.current) observerRef.current.disconnect();
-
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) loadMore();
-      },
-      { threshold: 0.1 },
-    );
-
-    if (sentinelRef.current) {
-      observerRef.current.observe(sentinelRef.current);
-    }
-
-    return () => observerRef.current?.disconnect();
-  }, [loadMore]);
+  const sentinelRef = useInfiniteScroll<HTMLTableRowElement>(loadMore);
 
   const { ref: tableRef, height: tableHeight } = useTableHeight();
 
